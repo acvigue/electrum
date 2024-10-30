@@ -12,8 +12,6 @@ elif [ "$ELECTRUM_NETWORK" = "simnet" ]; then
   FLAGS='--simnet'
 fi
 
-FLAGS="$FLAGS -v"
-
 # Graceful shutdown
 trap 'pkill -TERM -P1; electrum daemon stop; exit 0' SIGTERM
 
