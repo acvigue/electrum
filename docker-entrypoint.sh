@@ -17,6 +17,9 @@ fi
 # Graceful shutdown
 trap 'pkill -TERM -P1; electrum daemon stop; exit 0' SIGTERM
 
+#in case of last incomplete shutdown
+electrum stop || true
+
 # Set config
 electrum --offline $FLAGS setconfig rpcuser ${ELECTRUM_RPC_USER}
 electrum --offline $FLAGS setconfig rpcpassword ${ELECTRUM_RPC_PASSWORD}
