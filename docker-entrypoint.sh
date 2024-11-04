@@ -26,6 +26,12 @@ electrum --offline $FLAGS setconfig rpcport 7000
 # Run application
 electrum $FLAGS daemon -d
 
+# Wait for daemon to start
+sleep 3
+
+# Load wallet
+electrum $FLAGS --rpcuser ${ELECTRUM_RPC_USER} --rpcpassword ${ELECTRUM_RPC_PASSWORD} load_wallet
+
 # Wait forever
 while true; do
   tail -f /dev/null & wait ${!}
