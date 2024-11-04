@@ -23,6 +23,11 @@ electrum --offline $FLAGS setconfig rpcpassword ${ELECTRUM_RPC_PASSWORD}
 electrum --offline $FLAGS setconfig rpchost 0.0.0.0
 electrum --offline $FLAGS setconfig rpcport 7000
 
+#create wallet if flag
+if [ "$ELECTRUM_CREATE_WALLET" = "true" ]; then
+  electrum --offline $FLAGS create
+fi
+
 # Run application
 electrum $FLAGS daemon -d
 
