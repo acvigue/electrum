@@ -1,0 +1,24 @@
+#!/bin/bash
+
+EXIT_CODE=$1
+echo "Electrum daemon stopped with exit code ${EXIT_CODE}"
+
+# Determine the correct flags based on TESTNET
+ELECTRUM_DIR="/data/.electrum"
+if [ "${TESTNET,,}" = "true" ] || [ "${TESTNET}" = "1" ]; then
+    ELECTRUM_DIR="${ELECTRUM_DIR}/testnet"
+    FLAGS="--testnet -D ${ELECTRUM_DIR}"
+else
+    FLAGS="-D ${ELECTRUM_DIR}"
+fi
+
+# Gracefully stop the Electrum daemon
+echo "Stopping Electrum daemon gracefully..."
+electrum ${FLAGS} stop 2>/dev/null || true
+sleep 1
+
+# Signal container to halt if needed
+if [ ${EXIT_CODE} -ne 0 ] && [ ${EXIT_CODE} -ne 256 ]; then
+    echo ${EXIT_CODE} > /run/s6-linux-init-container-results/exitcode
+    /run/s6/basedir/bin/halt
+fi
