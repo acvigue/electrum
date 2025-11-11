@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  electrum:
+    build: .
+    container_name: electrum
+    restart: unless-stopped
+    ports:
+      - "7000:7000" # RPC port
+    volumes:
+      - ./data:/data
+    environment:
+      # RPC Configuration
+      - ELECTRUM_RPC_HOST=0.0.0.0
+      - ELECTRUM_RPC_PORT=7000
+      - ELECTRUM_RPC_USERNAME=electrum
+      - ELECTRUM_RPC_PASSWORD=changeme_strong_password
+
+      # Network Configuration
+      - TESTNET=false
+      - ELECTRUM_NETWORK=mainnet
+
+      # Wallet Configuration
+      - ELECTRUM_WALLET_NAME=default_wallet
+
+      # Proxy Configuration (optional)
+      # - ELECTRUM_PROXY=socks5:proxy.example.com:9050
+
+      # User ID (matches host user for volume permissions)
+      - PUID=521
+      - PGID=521
+
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Example: Testnet configuration
+  # electrum-testnet:
+  #   build: .
+  #   container_name: electrum-testnet
+  #   restart: unless-stopped
+  #   ports:
+  #     - "7001:7001"
+  #   volumes:
+  #     - ./data-testnet:/data
+  #   environment:
+  #     - ELECTRUM_RPC_HOST=0.0.0.0
+  #     - ELECTRUM_RPC_PORT=7001
+  #     - ELECTRUM_RPC_USERNAME=electrum
+  #     - ELECTRUM_RPC_PASSWORD=changeme_strong_password
+  #     - TESTNET=true
+  #     - ELECTRUM_WALLET_NAME=testnet_wallet
+  #     - PUID=521
+  #     - PGID=521

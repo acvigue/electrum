@@ -57,6 +57,16 @@ if [ -e "${LOCKFILE}" ]; then
     rm -f "${LOCKFILE}"
 fi
 
+# Build command arguments for client commands (includes RPC auth)
+CMDARGS=""
+if [ -n "${ELECTRUM_RPC_USERNAME}" ]; then
+    CMDARGS="${CMDARGS} --rpcuser ${ELECTRUM_RPC_USERNAME}"
+fi
+
+if [ -n "${ELECTRUM_RPC_PASSWORD}" ]; then
+    CMDARGS="${CMDARGS} --rpcpassword ${ELECTRUM_RPC_PASSWORD}"
+fi
+
 # Start daemon
 echo "Starting Electrum daemon on ${ELECTRUM_RPC_HOST}:${ELECTRUM_RPC_PORT}"
 electrum ${FLAGS} daemon ${DAEMON_ARGS}
@@ -64,7 +74,7 @@ electrum ${FLAGS} daemon ${DAEMON_ARGS}
 # Wait for daemon to be ready
 echo "Waiting for daemon to be ready..."
 for i in {1..30}; do
-    if electrum ${FLAGS} getinfo > /dev/null 2>&1; then
+    if electrum ${FLAGS} ${CMDARGS} getinfo > /dev/null 2>&1; then
         echo "Daemon is ready"
         break
     fi
@@ -78,7 +88,7 @@ done
 # Load wallet if it exists
 if [ -f "${WALLET_PATH}" ]; then
     echo "Loading wallet: ${ELECTRUM_WALLET_NAME}"
-    electrum ${FLAGS} load_wallet -w "${WALLET_PATH}"
+    electrum ${FLAGS} ${CMDARGS} load_wallet -w "${WALLET_PATH}"
     echo "Wallet loaded successfully"
 else
     echo "Wallet file not found at ${WALLET_PATH}"
@@ -89,7 +99,7 @@ fi
 # Keep the script running by monitoring the daemon
 echo "Electrum daemon running. Monitoring..."
 while true; do
-    if ! electrum ${FLAGS} getinfo > /dev/null 2>&1; then
+    if ! electrum ${FLAGS} ${CMDARGS} getinfo > /dev/null 2>&1; then
         echo "ERROR: Daemon stopped unexpectedly"
         exit 1
     fi
