@@ -71,10 +71,7 @@ RUN addgroup -g 521 electrum && \
     chown -R electrum:electrum /data
 
 # Environment variables with defaults
-ENV ELECTRUM_RPC_USERNAME="" \
-    ELECTRUM_RPC_PASSWORD="" \
-    ELECTRUM_PROXY="" \
-    ELECTRUM_RPC_PORT="7000" \
+ENV ELECTRUM_RPC_PORT="7000" \
     ELECTRUM_RPC_HOST="0.0.0.0" \
     TESTNET="false" \
     ELECTRUM_NETWORK="mainnet" \
