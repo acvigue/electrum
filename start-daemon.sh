@@ -2,16 +2,14 @@
 set -e
 
 ELECTRUM_DIR="/data/.electrum"
-WALLET_PATH="${ELECTRUM_DIR}/wallets/${ELECTRUM_WALLET_NAME}"
 
 # Set network and flags based on TESTNET flag
 if [ "${TESTNET,,}" = "true" ] || [ "${TESTNET}" = "1" ]; then
     ELECTRUM_DIR="${ELECTRUM_DIR}/testnet"
-    WALLET_PATH="${ELECTRUM_DIR}/wallets/${ELECTRUM_WALLET_NAME}"
-    FLAGS="--testnet -D ${ELECTRUM_DIR} -w ${WALLET_PATH}"
+    FLAGS="--testnet -D ${ELECTRUM_DIR}"
     echo "Running on testnet"
 else
-    FLAGS="-D ${ELECTRUM_DIR} -w ${WALLET_PATH}"
+    FLAGS="-D ${ELECTRUM_DIR}"
     echo "Running on mainnet"
 fi
 
