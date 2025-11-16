@@ -1,0 +1,5 @@
+#!/command/execlineb -P
+with-contenv
+s6-setuidgid electrum
+foreground { echo "Starting Electrum daemon in foreground mode..." }
+/usr/local/bin/start-daemon.sh

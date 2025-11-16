@@ -74,37 +74,18 @@ RUN addgroup -g 521 electrum && \
 ENV ELECTRUM_RPC_PORT="7000" \
     ELECTRUM_RPC_HOST="0.0.0.0" \
     TESTNET="false" \
-    ELECTRUM_NETWORK="mainnet" \
     ELECTRUM_WALLET_NAME="default_wallet" \
     S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     PUID=521 \
     PGID=521
 
-# Create S6 service directory for Electrum
-RUN mkdir -p /etc/s6-overlay/s6-rc.d/electrum-daemon && \
-    mkdir -p /etc/s6-overlay/s6-rc.d/electrum-daemon/dependencies.d && \
-    mkdir -p /etc/s6-overlay/s6-rc.d/user/contents.d
+# Copy S6 service directory structure
+COPY s6-rc.d /etc/s6-overlay/s6-rc.d
 
-# Create service type file
-RUN echo "longrun" > /etc/s6-overlay/s6-rc.d/electrum-daemon/type
-
-# Create dependency on base
-RUN touch /etc/s6-overlay/s6-rc.d/electrum-daemon/dependencies.d/base
-
-# Add electrum-daemon to user bundle
-RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/electrum-daemon
-
-# Create the run script for the service
-COPY electrum-daemon-run /etc/s6-overlay/s6-rc.d/electrum-daemon/run
-RUN chmod +x /etc/s6-overlay/s6-rc.d/electrum-daemon/run
-
-# Create finish script to handle graceful shutdown
-COPY electrum-daemon-finish /etc/s6-overlay/s6-rc.d/electrum-daemon/finish
-RUN chmod +x /etc/s6-overlay/s6-rc.d/electrum-daemon/finish
-
-# Create the main electrum startup script
-COPY run-electrum.sh /usr/local/bin/run-electrum.sh
-RUN chmod +x /usr/local/bin/run-electrum.sh
+# Copy the startup scripts
+COPY start-daemon.sh /usr/local/bin/start-daemon.sh
+COPY service.sh /usr/local/bin/service.sh
+RUN chmod +x /usr/local/bin/start-daemon.sh /usr/local/bin/service.sh
 
 # Create health check script
 COPY healthcheck.sh /usr/local/bin/healthcheck.sh
